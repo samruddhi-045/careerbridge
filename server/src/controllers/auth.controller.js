@@ -46,4 +46,44 @@ const me = catchAsync(async (req, res) => {
   res.status(200).json({ success: true, data: { user: user.toPublicJSON() } });
 });
 
-module.exports = { registerCandidate, registerRecruiter, login, refresh, logout, me };
+const verifyEmail = catchAsync(async (req, res) => {
+  const user = await authService.verifyEmail(req.params.token);
+  res.status(200).json({ success: true, data: { user: user.toPublicJSON() }, message: "Email verified" });
+});
+
+const resendVerification = catchAsync(async (req, res) => {
+  await authService.resendVerification(req.body.email);
+  // always a generic response, so this can't be used to check which emails exist
+  res.status(200).json({
+    success: true,
+    data: null,
+    message: "If that email is registered and unverified, a verification link was sent.",
+  });
+});
+
+const forgotPassword = catchAsync(async (req, res) => {
+  await authService.forgotPassword(req.body.email);
+  res.status(200).json({
+    success: true,
+    data: null,
+    message: "If that email is registered, a password reset link was sent.",
+  });
+});
+
+const resetPassword = catchAsync(async (req, res) => {
+  await authService.resetPassword(req.params.token, req.body.password);
+  res.status(200).json({ success: true, data: null, message: "Password updated. You can sign in now." });
+});
+
+module.exports = {
+  registerCandidate,
+  registerRecruiter,
+  login,
+  refresh,
+  logout,
+  me,
+  verifyEmail,
+  resendVerification,
+  forgotPassword,
+  resetPassword,
+};

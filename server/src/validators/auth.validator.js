@@ -22,4 +22,23 @@ const loginSchema = z.object({
   password: z.string().min(1, "Enter your password"),
 });
 
-module.exports = { registerSchema, loginSchema };
+const emailOnlySchema = z.object({
+  email: z.string().trim().toLowerCase().email("Enter a valid email address"),
+});
+
+// same password rules as registerSchema, kept separate so the two can drift later
+const resetPasswordSchema = z.object({
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .max(72, "Password must be under 72 characters")
+    .regex(/[a-zA-Z]/, "Password must contain a letter")
+    .regex(/[0-9]/, "Password must contain a number"),
+});
+
+module.exports = {
+  registerSchema,
+  loginSchema,
+  emailOnlySchema,
+  resetPasswordSchema,
+};

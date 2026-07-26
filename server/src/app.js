@@ -5,6 +5,8 @@ const morgan = require("morgan");
 
 const healthRoutes = require("./routes/health.routes");
 const authRoutes = require("./routes/auth.routes");
+const companyRoutes = require("./routes/company.routes");
+const candidateProfileRoutes = require("./routes/candidateProfile.routes");
 const { errorHandler, notFound } = require("./middleware/errorHandler");
 
 const app = express();
@@ -29,6 +31,8 @@ if (process.env.NODE_ENV === "development") {
 // ---- Routes ----
 app.use("/api/v1/health", healthRoutes);
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/companies", companyRoutes);
+app.use("/api/v1/candidates", candidateProfileRoutes);
 
 // ---- Error handling (must be last) ----
 app.use(notFound);

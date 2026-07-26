@@ -36,8 +36,14 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+  // for responses that return an updated user without new tokens (e.g. company
+  // create/join changes role/companyId), so the app doesn't need a full refresh
+  const updateUser = useCallback((partialOrUser) => {
+    setUser((prev) => (prev ? { ...prev, ...partialOrUser } : partialOrUser));
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, booting, login, register, logout }}>
+    <AuthContext.Provider value={{ user, booting, login, register, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

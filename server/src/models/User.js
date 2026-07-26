@@ -32,6 +32,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false, // flipped in the email-verification slice
     },
+    emailVerificationTokenHash: { type: String, select: false, default: null },
+    emailVerificationExpires: { type: Date, select: false, default: null },
+    passwordResetTokenHash: { type: String, select: false, default: null },
+    passwordResetExpires: { type: Date, select: false, default: null },
     authProvider: {
       type: String,
       enum: ["local", "google"],

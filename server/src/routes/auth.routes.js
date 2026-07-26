@@ -4,7 +4,12 @@ const rateLimit = require("express-rate-limit");
 const ctrl = require("../controllers/auth.controller");
 const validate = require("../middleware/validate");
 const { protect } = require("../middleware/protect");
-const { registerSchema, loginSchema } = require("../validators/auth.validator");
+const {
+  registerSchema,
+  loginSchema,
+  emailOnlySchema,
+  resetPasswordSchema,
+} = require("../validators/auth.validator");
 
 const router = express.Router();
 
@@ -30,5 +35,13 @@ router.post("/login", authLimiter, validate(loginSchema), ctrl.login);
 router.post("/refresh", ctrl.refresh);
 router.post("/logout", ctrl.logout);
 router.get("/me", protect, ctrl.me);
+
+// email verification
+router.get("/verify-email/:token", ctrl.verifyEmail);
+router.post("/resend-verification", authLimiter, validate(emailOnlySchema), ctrl.resendVerification);
+
+// password reset
+router.post("/forgot-password", authLimiter, validate(emailOnlySchema), ctrl.forgotPassword);
+router.post("/reset-password/:token", authLimiter, validate(resetPasswordSchema), ctrl.resetPassword);
 
 module.exports = router;

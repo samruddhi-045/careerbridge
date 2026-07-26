@@ -64,6 +64,9 @@ export default function Login() {
           label="Password" name="password" type="password" value={values.password} onChange={handleChange}
           error={fieldErrors.password} autoComplete="current-password"
         />
+        <p className="text-right text-[13px]">
+          <Link to="/forgot-password" className="font-medium text-accent hover:underline">Forgot password?</Link>
+        </p>
         <Button type="submit" loading={loading}>Sign in</Button>
       </form>
 
