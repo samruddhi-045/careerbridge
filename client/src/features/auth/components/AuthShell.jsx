@@ -7,7 +7,7 @@ export default function AuthShell({ eyebrow, steps = [], activeStep = 0, childre
       {/* Left rail */}
       <aside className="relative flex flex-col justify-between bg-ink px-8 py-8 text-paper lg:px-12 lg:py-12">
         <Link to="/" className="font-display text-lg font-600 tracking-tight">
-          Hirepath<span className="text-accent">.</span>
+          CareerBridge<span className="text-accent">.</span>
         </Link>
 
         <div className="hidden lg:block">

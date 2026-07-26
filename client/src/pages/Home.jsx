@@ -8,7 +8,7 @@ export default function Home() {
     <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center rise">
       <p className="eyebrow text-muted">Job application portal</p>
       <h1 className="mt-4 font-display text-[44px] font-600 leading-[1.05] tracking-[-0.03em] sm:text-[56px]">
-        Hirepath<span className="text-accent">.</span>
+        CareerBridge<span className="text-accent">.</span>
       </h1>
       <p className="mt-4 max-w-md text-[16px] text-muted">
         Where candidates track every application, and hiring teams run one clean pipeline.
