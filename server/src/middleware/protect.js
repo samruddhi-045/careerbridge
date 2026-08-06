@@ -2,6 +2,7 @@ const userRepo = require("../repositories/user.repository");
 const AppError = require("../utils/AppError");
 const catchAsync = require("../utils/catchAsync");
 const { verifyAccessToken } = require("../utils/token");
+const { isTokenStale } = require("../utils/session");
 
 // checks the access token and attaches req.user if it's valid
 const protect = catchAsync(async (req, res, next) => {
@@ -11,10 +12,17 @@ const protect = catchAsync(async (req, res, next) => {
   if (!token) throw new AppError("Not authenticated", 401);
 
   const payload = verifyAccessToken(token); // throws if invalid/expired, errorHandler turns it into 401
-  const user = await userRepo.findById(payload.sub);
+  const user = await userRepo.findByIdForAuth(payload.sub);
 
   if (!user || user.status !== "active") {
     throw new AppError("Not authenticated", 401);
+  }
+
+  // A token minted before the last password change is dead, even if it hasn't
+  // expired yet. This is what makes "reset password" actually kick out
+  // whoever else was signed in.
+  if (isTokenStale(user, payload)) {
+    throw new AppError("Session expired. Please sign in again.", 401);
   }
 
   req.user = user;

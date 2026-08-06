@@ -10,12 +10,13 @@ const createCompany = catchAsync(async (req, res) => {
   });
 });
 
+// code comes from the body now, not a company id in the URL
 const joinCompany = catchAsync(async (req, res) => {
-  const { company, user } = await companyService.joinCompany(req.user, req.params.id);
+  const { company, user } = await companyService.joinCompany(req.user, req.body.code);
   res.status(200).json({
     success: true,
     data: { company, user: user.toPublicJSON() },
-    message: "Joined company",
+    message: `Joined ${company.name}`,
   });
 });
 
@@ -39,4 +40,27 @@ const updateCompany = catchAsync(async (req, res) => {
   res.status(200).json({ success: true, data: { company }, message: "Company updated" });
 });
 
-module.exports = { createCompany, joinCompany, getMyCompany, getCompany, searchCompanies, updateCompany };
+const getInviteCode = catchAsync(async (req, res) => {
+  const inviteCode = await companyService.getInviteCode(req.user);
+  res.status(200).json({ success: true, data: { inviteCode } });
+});
+
+const regenerateInviteCode = catchAsync(async (req, res) => {
+  const inviteCode = await companyService.regenerateInviteCode(req.user);
+  res.status(200).json({
+    success: true,
+    data: { inviteCode },
+    message: "New code generated. The old one no longer works.",
+  });
+});
+
+module.exports = {
+  createCompany,
+  joinCompany,
+  getMyCompany,
+  getCompany,
+  searchCompanies,
+  updateCompany,
+  getInviteCode,
+  regenerateInviteCode,
+};

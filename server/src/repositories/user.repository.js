@@ -10,6 +10,9 @@ const findByEmail = (email, { withPassword = false } = {}) => {
 
 const findById = (id) => User.findById(id);
 
+// passwordChangedAt is select:false, so auth has to ask for it explicitly
+const findByIdForAuth = (id) => User.findById(id).select("+passwordChangedAt");
+
 const create = (data) => User.create(data);
 
 const touchLastLogin = (id) =>
@@ -54,6 +57,10 @@ const updatePassword = (id, passwordHash) =>
     passwordHash,
     passwordResetTokenHash: null,
     passwordResetExpires: null,
+    // One second in the past: JWT `iat` is whole seconds, so a token issued in
+    // the same second as this write would otherwise be judged stale and the
+    // user would be logged out of the session they just reset from.
+    passwordChangedAt: new Date(Date.now() - 1000),
   });
 
 // --- company onboarding ---
@@ -63,6 +70,7 @@ const setCompany = (id, companyId, role) =>
 module.exports = {
   findByEmail,
   findById,
+  findByIdForAuth,
   create,
   touchLastLogin,
   setEmailVerificationToken,

@@ -52,6 +52,14 @@ const userSchema = new mongoose.Schema(
       default: "active",
     },
     lastLoginAt: { type: Date, default: null },
+
+    /**
+     * When the password was last changed. Any access or refresh token issued
+     * BEFORE this moment is rejected, which is how a password reset actually
+     * ends sessions an attacker may already hold. select:false because nothing
+     * outside auth needs it.
+     */
+    passwordChangedAt: { type: Date, default: null, select: false },
   },
   { timestamps: true } // gives createdAt + updatedAt for free
 );

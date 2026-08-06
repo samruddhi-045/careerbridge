@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-// shared header for signed-in pages (dashboard, profile, company)
+// shared header for signed-in pages (dashboard, profile, resumes, jobs, company)
 export default function AppHeader() {
   const { user, logout } = useAuth();
 
@@ -14,10 +14,24 @@ export default function AppHeader() {
 
         <nav className="flex items-center gap-5 text-sm font-medium text-muted">
           {user?.role === "candidate" && (
-            <Link to="/candidate/profile" className="hover:text-ink transition-colors">My profile</Link>
+            <>
+              <Link to="/candidate/profile" className="hover:text-ink transition-colors">
+                My profile
+              </Link>
+              <Link to="/candidate/resumes" className="hover:text-ink transition-colors">
+                My resumes
+              </Link>
+            </>
           )}
           {(user?.role === "recruiter" || user?.role === "company_admin") && (
-            <Link to="/company" className="hover:text-ink transition-colors">Company</Link>
+            <>
+              <Link to="/recruiter/jobs" className="hover:text-ink transition-colors">
+                Jobs
+              </Link>
+              <Link to="/company" className="hover:text-ink transition-colors">
+                Company
+              </Link>
+            </>
           )}
           <button
             onClick={logout}

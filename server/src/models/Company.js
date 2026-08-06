@@ -39,6 +39,14 @@ const companySchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    /**
+     * Shared secret that lets a recruiter join this company.
+     * select:false so it never leaks through GET /companies/:id, which any
+     * signed-in user can call. Only the company_admin can read it, via
+     * GET /companies/invite-code.
+     */
+    inviteCode: { type: String, select: false, index: true },
+
     // flips to true once a platform_admin reviews it, not used for access control yet
     verified: { type: Boolean, default: false },
   },

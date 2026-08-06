@@ -5,10 +5,10 @@ import TextArea from "../../components/ui/TextArea";
 import Button from "../../components/ui/Button";
 import { useAuth } from "../../context/AuthContext";
 import { parseApiError } from "../../features/auth/api/authApi";
+import InviteCodeCard from "../../features/company/components/InviteCodeCard";
 import {
   createCompanyRequest,
   joinCompanyRequest,
-  searchCompaniesRequest,
   getMyCompanyRequest,
   updateCompanyRequest,
 } from "../../features/company/api/companyApi";
@@ -29,31 +29,19 @@ const emptyCompanyForm = {
 function CreateOrJoinCompany({ onDone }) {
   const [tab, setTab] = useState("create"); // create | join
   const [form, setForm] = useState(emptyCompanyForm);
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
-  const [searching, setSearching] = useState(false);
+  const [code, setCode] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
   const set = (key, value) => setForm((f) => ({ ...f, [key]: value }));
   const setNested = (group, key, value) => setForm((f) => ({ ...f, [group]: { ...f[group], [key]: value } }));
 
-  const handleSearch = async (e) => {
+  const handleJoin = async (e) => {
     e.preventDefault();
-    setSearching(true);
-    try {
-      const res = await searchCompaniesRequest(query);
-      setResults(res.data.companies);
-    } finally {
-      setSearching(false);
-    }
-  };
-
-  const handleJoin = async (companyId) => {
     setSaving(true);
     setError("");
     try {
-      const res = await joinCompanyRequest(companyId);
+      const res = await joinCompanyRequest(code);
       onDone(res.data);
     } catch (err) {
       setError(parseApiError(err).message);
@@ -91,7 +79,7 @@ function CreateOrJoinCompany({ onDone }) {
           onClick={() => setTab("join")}
           className={`flex-1 rounded-md py-2 transition-colors ${tab === "join" ? "bg-ink text-white" : "text-muted hover:text-ink"}`}
         >
-          Join existing company
+          Join with a code
         </button>
       </div>
 
@@ -124,42 +112,17 @@ function CreateOrJoinCompany({ onDone }) {
           <Button type="submit" loading={saving}>Create company</Button>
         </form>
       ) : (
-        <div className="mt-6">
-          <form onSubmit={handleSearch} className="flex items-end gap-3">
-            <div className="flex-1">
-              <TextField label="Search by name" name="query" value={query} onChange={(e) => setQuery(e.target.value)} autoFocus />
-            </div>
-            <button
-              type="submit"
-              disabled={searching}
-              className="h-[46px] shrink-0 rounded-lg border border-line bg-white px-5 text-[15px] font-medium text-ink hover:border-ink/30 transition-colors disabled:opacity-60"
-            >
-              {searching ? "Searching…" : "Search"}
-            </button>
-          </form>
-
-          <ul className="mt-5 space-y-2">
-            {results.map((c) => (
-              <li key={c._id} className="flex items-center justify-between rounded-lg border border-line px-4 py-3">
-                <div>
-                  <p className="text-[15px] font-medium">{c.name}</p>
-                  <p className="text-[13px] text-muted">{[c.industry, c.location?.city].filter(Boolean).join(" · ") || "—"}</p>
-                </div>
-                <button
-                  type="button"
-                  disabled={saving}
-                  onClick={() => handleJoin(c._id)}
-                  className="rounded-lg border border-line px-3.5 py-2 text-[13px] font-medium hover:border-ink/30 transition-colors disabled:opacity-60"
-                >
-                  Join
-                </button>
-              </li>
-            ))}
-            {results.length === 0 && query && !searching && (
-              <p className="text-[14px] text-muted">No companies matched "{query}".</p>
-            )}
-          </ul>
-        </div>
+        <form onSubmit={handleJoin} className="mt-6 space-y-5">
+          <TextField
+            label="Invite code"
+            name="code"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            autoFocus
+            hint="Ask whoever set up your company for this. You can't join without it."
+          />
+          <Button type="submit" loading={saving}>Join company</Button>
+        </form>
       )}
     </>
   );
@@ -204,6 +167,9 @@ function CompanyDetails({ company, canEdit, onSave }) {
             </a>
           )}
         </div>
+
+        {canEdit && <InviteCodeCard />}
+
         {canEdit && (
           <Button type="button" variant="ghost" onClick={() => { setForm(company); setEditing(true); }}>
             Edit company details

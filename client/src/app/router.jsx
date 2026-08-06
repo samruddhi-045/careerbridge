@@ -8,7 +8,11 @@ import ForgotPassword from "../pages/auth/ForgotPassword";
 import ResetPassword from "../pages/auth/ResetPassword";
 import Dashboard from "../pages/Dashboard";
 import CandidateProfile from "../pages/candidate/CandidateProfile";
+import MyResumes from "../pages/candidate/MyResumes";
+import ResumeBuilder from "../pages/candidate/ResumeBuilder";
 import Company from "../pages/company/Company";
+import RecruiterJobs from "../pages/recruiter/RecruiterJobs";
+import JobForm from "../pages/recruiter/JobForm";
 import ProtectedRoute from "./ProtectedRoute";
 
 const router = createBrowserRouter([
@@ -25,11 +29,21 @@ const router = createBrowserRouter([
   },
   {
     element: <ProtectedRoute roles={["candidate"]} />,
-    children: [{ path: "/candidate/profile", element: <CandidateProfile /> }],
+    children: [
+      { path: "/candidate/profile", element: <CandidateProfile /> },
+      { path: "/candidate/resumes", element: <MyResumes /> },
+      { path: "/candidate/resumes/:id", element: <ResumeBuilder /> },
+    ],
   },
   {
     element: <ProtectedRoute roles={["recruiter", "company_admin"]} />,
-    children: [{ path: "/company", element: <Company /> }],
+    children: [
+      { path: "/company", element: <Company /> },
+      { path: "/recruiter/jobs", element: <RecruiterJobs /> },
+      // "/new" must sit above "/:id" — otherwise the router reads "new" as a job id
+      { path: "/recruiter/jobs/new", element: <JobForm /> },
+      { path: "/recruiter/jobs/:id", element: <JobForm /> },
+    ],
   },
 ]);
 

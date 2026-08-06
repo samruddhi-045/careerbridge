@@ -1,7 +1,7 @@
 const { z } = require("zod");
 
 const createCompanySchema = z.object({
-  name: z.string().trim().min(2, "Enter a company name").max(120, "Name is too long"),
+  name: z.string({ error: "Enter a company name" }).trim().min(2, "Enter a company name").max(120, "Name is too long"),
   website: z.string().trim().url("Enter a valid URL").optional().or(z.literal("")),
   industry: z.string().trim().max(80).optional().or(z.literal("")),
   size: z.enum(["1-10", "11-50", "51-200", "201-500", "501-1000", "1000+"]).optional(),
@@ -24,8 +24,17 @@ const createCompanySchema = z.object({
 // same shape, every field optional — used for PATCH
 const updateCompanySchema = createCompanySchema.partial();
 
+/**
+ * Joining is now by invite code, not by company id.
+ * Uppercased here so "abc123" and "ABC123" are the same code to the user.
+ */
 const joinCompanySchema = z.object({
-  companyId: z.string().trim().min(1, "companyId is required"),
+  code: z
+    .string({ error: "Enter an invite code" })
+    .trim()
+    .toUpperCase()
+    .min(6, "That invite code doesn't look right")
+    .max(32, "That invite code doesn't look right"),
 });
 
 module.exports = { createCompanySchema, updateCompanySchema, joinCompanySchema };
