@@ -10,6 +10,7 @@ const candidateProfileRoutes = require("./routes/candidateProfile.routes");
 const { errorHandler, notFound } = require("./middleware/errorHandler");
 const resumeRoutes = require("./routes/resume.routes");   // with the other requires
 const recruiterJobRoutes = require("./routes/job.routes");        // with the other requires
+const publicJobRoutes = require("./routes/publicJob.routes");     // with the other requires
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use("/api/v1/companies", companyRoutes);
 app.use("/api/v1/candidates", candidateProfileRoutes);
 app.use("/api/v1/resumes", resumeRoutes);                 // after the auth route
 app.use("/api/v1/recruiter/jobs", recruiterJobRoutes);            // with the other routes
+app.use("/api/v1/jobs", publicJobRoutes);                         // with the other routes
 
 // ---- Error handling (must be last) ----
 app.use(notFound);

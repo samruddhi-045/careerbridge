@@ -15,6 +15,13 @@ export default function AppHeader() {
         <nav className="flex items-center gap-5 text-sm font-medium text-muted">
           {user?.role === "candidate" && (
             <>
+
+            <Link to="/jobs" className="hover:text-ink transition-colors">
+                Find jobs
+              </Link>
+              <Link to="/candidate/saved" className="hover:text-ink transition-colors">
+                Saved
+              </Link>
               <Link to="/candidate/profile" className="hover:text-ink transition-colors">
                 My profile
               </Link>

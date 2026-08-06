@@ -14,10 +14,16 @@ import Company from "../pages/company/Company";
 import RecruiterJobs from "../pages/recruiter/RecruiterJobs";
 import JobForm from "../pages/recruiter/JobForm";
 import ProtectedRoute from "./ProtectedRoute";
+import JobSearch from "../pages/jobs/JobSearch";
+import JobDetail from "../pages/jobs/JobDetail";
+import SavedJobs from "../pages/candidate/SavedJobs";
 
 const router = createBrowserRouter([
   { path: "/", element: <Home /> },
   { path: "/login", element: <Login /> },
+  // public: browsing and viewing jobs needs no account
+  { path: "/jobs", element: <JobSearch /> },
+  { path: "/jobs/:id", element: <JobDetail /> },
   { path: "/signup/candidate", element: <CandidateSignup /> },
   { path: "/signup/recruiter", element: <RecruiterSignup /> },
   { path: "/verify-email/:token", element: <VerifyEmail /> },
@@ -33,6 +39,7 @@ const router = createBrowserRouter([
       { path: "/candidate/profile", element: <CandidateProfile /> },
       { path: "/candidate/resumes", element: <MyResumes /> },
       { path: "/candidate/resumes/:id", element: <ResumeBuilder /> },
+      { path: "/candidate/saved", element: <SavedJobs /> },
     ],
   },
   {
