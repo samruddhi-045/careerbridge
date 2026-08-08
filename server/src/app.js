@@ -12,6 +12,7 @@ const resumeRoutes = require("./routes/resume.routes");   // with the other requ
 const recruiterJobRoutes = require("./routes/job.routes");        // with the other requires
 const publicJobRoutes = require("./routes/publicJob.routes");     // with the other requires
 const applicationRoutes = require("./routes/application.routes");   // with the other requires
+const analyticsRoutes = require("./routes/analytics.routes");    // with the other requires
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use("/api/v1/resumes", resumeRoutes);                 // after the auth rout
 app.use("/api/v1/recruiter/jobs", recruiterJobRoutes);            // with the other routes
 app.use("/api/v1/jobs", publicJobRoutes);                         // with the other routes
 app.use("/api/v1/applications", applicationRoutes);                 // with the other routes
+app.use("/api/v1/analytics", analyticsRoutes);                   // with the other routes
 
 // ---- Error handling (must be last) ----
 app.use(notFound);
