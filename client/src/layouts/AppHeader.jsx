@@ -22,6 +22,9 @@ export default function AppHeader() {
               <Link to="/candidate/applications" className="hover:text-ink transition-colors">
                 Applications
               </Link>
+              <Link to="/candidate/insights" className="hover:text-ink transition-colors">
+                Insights
+              </Link>
               <Link to="/candidate/saved" className="hover:text-ink transition-colors">
                 Saved
               </Link>
@@ -37,6 +40,9 @@ export default function AppHeader() {
             <>
                <Link to="/recruiter/pipeline" className="hover:text-ink transition-colors">
                 Pipeline
+              </Link>
+              <Link to="/recruiter/insights" className="hover:text-ink transition-colors">
+                Insights
               </Link>
               <Link to="/recruiter/jobs" className="hover:text-ink transition-colors">
                 Jobs

@@ -19,6 +19,8 @@ import JobDetail from "../pages/jobs/JobDetail";
 import SavedJobs from "../pages/candidate/SavedJobs";
 import MyApplications from "../pages/candidate/MyApplications";
 import Pipeline from "../pages/recruiter/Pipeline";
+import CandidateInsights from "../pages/candidate/CandidateInsights";
+import RecruiterInsights from "../pages/recruiter/RecruiterInsights";
 
 const router = createBrowserRouter([
   { path: "/", element: <Home /> },
@@ -44,6 +46,7 @@ const router = createBrowserRouter([
       { path: "/candidate/resumes", element: <MyResumes /> },
       { path: "/candidate/resumes/:id", element: <ResumeBuilder /> },
       { path: "/candidate/saved", element: <SavedJobs /> },
+      { path: "/candidate/insights", element: <CandidateInsights /> },
     ],
   },
   {
@@ -54,6 +57,7 @@ const router = createBrowserRouter([
       // "/new" must sit above "/:id" — otherwise the router reads "new" as a job id
       { path: "/recruiter/jobs/new", element: <JobForm /> },
       { path: "/recruiter/jobs/:id", element: <JobForm /> },
+      { path: "/recruiter/insights", element: <RecruiterInsights /> },
     ],
   },
 ]);
