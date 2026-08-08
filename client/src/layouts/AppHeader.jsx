@@ -19,6 +19,9 @@ export default function AppHeader() {
             <Link to="/jobs" className="hover:text-ink transition-colors">
                 Find jobs
               </Link>
+              <Link to="/candidate/applications" className="hover:text-ink transition-colors">
+                Applications
+              </Link>
               <Link to="/candidate/saved" className="hover:text-ink transition-colors">
                 Saved
               </Link>
@@ -32,6 +35,9 @@ export default function AppHeader() {
           )}
           {(user?.role === "recruiter" || user?.role === "company_admin") && (
             <>
+               <Link to="/recruiter/pipeline" className="hover:text-ink transition-colors">
+                Pipeline
+              </Link>
               <Link to="/recruiter/jobs" className="hover:text-ink transition-colors">
                 Jobs
               </Link>

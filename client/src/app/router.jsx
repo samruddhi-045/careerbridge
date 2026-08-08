@@ -17,6 +17,8 @@ import ProtectedRoute from "./ProtectedRoute";
 import JobSearch from "../pages/jobs/JobSearch";
 import JobDetail from "../pages/jobs/JobDetail";
 import SavedJobs from "../pages/candidate/SavedJobs";
+import MyApplications from "../pages/candidate/MyApplications";
+import Pipeline from "../pages/recruiter/Pipeline";
 
 const router = createBrowserRouter([
   { path: "/", element: <Home /> },
@@ -29,6 +31,8 @@ const router = createBrowserRouter([
   { path: "/verify-email/:token", element: <VerifyEmail /> },
   { path: "/forgot-password", element: <ForgotPassword /> },
   { path: "/reset-password/:token", element: <ResetPassword /> },
+  { path: "/candidate/applications", element: <MyApplications /> },
+  { path: "/recruiter/pipeline", element: <Pipeline /> },
   {
     element: <ProtectedRoute />,
     children: [{ path: "/dashboard", element: <Dashboard /> }],

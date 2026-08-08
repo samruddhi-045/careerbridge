@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import PublicHeader from "../../layouts/PublicHeader";
 import SaveJobButton from "../../features/job/components/SaveJobButton";
+import ApplyModal from "../../features/application/components/ApplyModal";
+import StatusBadge from "../../features/application/components/StatusBadge";
 import { useAuth } from "../../context/AuthContext";
 import { getPublicJobRequest } from "../../features/job/api/publicJobApi";
 import { parseApiError } from "../../features/auth/api/authApi";
@@ -36,6 +38,8 @@ export default function JobDetail() {
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [applyOpen, setApplyOpen] = useState(false);
+  const [justApplied, setJustApplied] = useState(false);
 
   useEffect(() => {
     getPublicJobRequest(id)
@@ -75,11 +79,16 @@ export default function JobDetail() {
   const isPastDeadline = job.closesAt && new Date(job.closesAt) < new Date();
   const canApply = !isClosed && !isPastDeadline;
 
+  // The API tells us if this candidate already applied, so we never offer a
+  // button that would come back 409.
+  const alreadyApplied = Boolean(job.appliedStatus) || justApplied;
+
   // Applying needs a candidate account. Signed-out visitors go to login and
   // come back here -- this is the moment signing up has a point.
   const handleApply = () => {
     if (!user) return navigate("/login", { state: { from: `/jobs/${id}` } });
-    // wired up in the next slice
+    if (user.role !== "candidate") return;
+    setApplyOpen(true);
   };
 
   return (
@@ -184,14 +193,28 @@ export default function JobDetail() {
                 </dl>
 
                 <div className="mt-5 space-y-2">
-                  <button
-                    type="button"
-                    onClick={handleApply}
-                    disabled={!canApply}
-                    className="w-full rounded-lg bg-accent px-4 py-2.5 text-[15px] font-medium text-white transition-colors hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {canApply ? "Apply now" : "Applications closed"}
-                  </button>
+                  {alreadyApplied ? (
+                    <div className="rounded-lg border border-line bg-paper px-4 py-3 text-center">
+                      <div className="flex items-center justify-center gap-2">
+                        <StatusBadge status={justApplied ? "applied" : job.appliedStatus} />
+                      </div>
+                      <Link
+                        to="/candidate/applications"
+                        className="mt-2 inline-block text-[13.5px] font-medium text-accent hover:underline"
+                      >
+                        Track this application
+                      </Link>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleApply}
+                      disabled={!canApply}
+                      className="w-full rounded-lg bg-accent px-4 py-2.5 text-[15px] font-medium text-white transition-colors hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {canApply ? "Apply now" : "Applications closed"}
+                    </button>
+                  )}
                   <div className="[&>button]:w-full [&>button]:justify-center">
                     <SaveJobButton jobId={job.id} initialSaved={job.isSaved} variant="full" />
                   </div>
@@ -201,6 +224,17 @@ export default function JobDetail() {
           </aside>
         </div>
       </main>
+
+      {applyOpen && (
+        <ApplyModal
+          job={job}
+          onClose={() => setApplyOpen(false)}
+          onApplied={() => {
+            setApplyOpen(false);
+            setJustApplied(true);
+          }}
+        />
+      )}
     </div>
   );
 }

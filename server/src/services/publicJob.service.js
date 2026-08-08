@@ -1,5 +1,6 @@
 const publicJobRepo = require("../repositories/publicJob.repository");
 const savedJobRepo = require("../repositories/savedJob.repository");
+const applicationRepo = require("../repositories/application.repository");
 const AppError = require("../utils/AppError");
 
 /**
@@ -9,7 +10,7 @@ const AppError = require("../utils/AppError");
  * when isVisible is false. A recruiter's internal numbers aren't a candidate's
  * business, and it's safer to whitelist fields than to remember to strip them.
  */
-const toPublicCard = (job, savedIds = []) => ({
+const toPublicCard = (job, savedIds = [], appliedMap = {}) => ({
   id: job._id,
   title: job.title,
   company: job.companyId
@@ -29,10 +30,13 @@ const toPublicCard = (job, savedIds = []) => ({
   status: job.status,
   publishedAt: job.publishedAt,
   isSaved: savedIds.includes(String(job._id)),
+  // null when not applied; otherwise the current stage, so a card can show
+  // "Applied" rather than offering a button that would 409.
+  appliedStatus: appliedMap[String(job._id)] || null,
 });
 
-const toPublicDetail = (job, isSaved) => ({
-  ...toPublicCard(job, isSaved ? [String(job._id)] : []),
+const toPublicDetail = (job, isSaved, appliedStatus) => ({
+  ...toPublicCard(job, isSaved ? [String(job._id)] : [], appliedStatus ? { [String(job._id)]: appliedStatus } : {}),
   description: job.description,
   responsibilities: job.responsibilities,
   requirements: job.requirements,
@@ -64,11 +68,18 @@ const searchJobs = async (params, user) => {
   const { items, total } = await publicJobRepo.search(params);
 
   let savedIds = [];
+  let appliedMap = {};
+
+  // Two extra queries for a whole page, not one per card.
   if (user?.role === "candidate" && items.length) {
-    savedIds = await savedJobRepo.findSavedIds(user._id, items.map((j) => j._id));
+    const ids = items.map((j) => j._id);
+    [savedIds, appliedMap] = await Promise.all([
+      savedJobRepo.findSavedIds(user._id, ids),
+      applicationRepo.findAppliedJobIds(user._id, ids),
+    ]);
   }
 
-  return { items: items.map((j) => toPublicCard(j, savedIds)), total };
+  return { items: items.map((j) => toPublicCard(j, savedIds, appliedMap)), total };
 };
 
 const getJob = async (id, user) => {
@@ -78,12 +89,18 @@ const getJob = async (id, user) => {
   if (!job) throw new AppError("This job isn't available", 404);
 
   let isSaved = false;
+  let appliedStatus = null;
+
   if (user?.role === "candidate") {
-    const saved = await savedJobRepo.findSavedIds(user._id, [job._id]);
+    const [saved, applied] = await Promise.all([
+      savedJobRepo.findSavedIds(user._id, [job._id]),
+      applicationRepo.findAppliedJobIds(user._id, [job._id]),
+    ]);
     isSaved = saved.length > 0;
+    appliedStatus = applied[String(job._id)] || null;
   }
 
-  return toPublicDetail(job, isSaved);
+  return toPublicDetail(job, isSaved, appliedStatus);
 };
 
 const saveJob = async (user, jobId) => {

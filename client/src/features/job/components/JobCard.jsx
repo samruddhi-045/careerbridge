@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import SaveJobButton from "./SaveJobButton";
 import { employmentLabel, workModeLabel, formatSalary, relativeTime } from "../jobConstants";
+import StatusBadge from "../../application/components/StatusBadge";
 
 export default function JobCard({ job }) {
   const salary = formatSalary(job.salary);
@@ -37,7 +38,8 @@ export default function JobCard({ job }) {
             ))}
           </div>
 
-          <div className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1">
+            {job.appliedStatus && <StatusBadge status={job.appliedStatus} />}
             {salary ? (
               <span className="text-[14px] font-medium text-ink">{salary}</span>
             ) : (
